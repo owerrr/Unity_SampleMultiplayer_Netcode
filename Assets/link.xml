@@ -1,0 +1,31 @@
+<linker>
+    <!-- Core ECS runtime -->
+    <assembly fullname="Unity.Entities" preserve="all" />
+    <assembly fullname="Unity.Entities.Hybrid" preserve="all" />
+
+    <!-- NetCode -->
+    <assembly fullname="Unity.NetCode" preserve="all" />
+
+    <!-- Transport layer -->
+    <assembly fullname="Unity.Networking.Transport" preserve="all" />
+
+    <!-- Burst compiled jobs referenced by NetCode -->
+    <assembly fullname="Unity.Collections" preserve="all" />
+    <assembly fullname="Unity.Mathematics" preserve="all" />
+    <assembly fullname="Unity.Transforms" preserve="all" />
+
+    <!-- New Input System -->
+    <assembly fullname="Unity.InputSystem" preserve="all" />
+
+    <!-- Game assembly-->
+    <assembly fullname="Assembly-CSharp" preserve="all" />
+
+    <!-- Rendering (Entities Graphics, URP, TMP) -->
+    <assembly fullname="Unity.Rendering.Hybrid" preserve="all" />
+    <assembly fullname="Unity.RenderPipelines.Universal.Runtime" preserve="all" />
+    <assembly fullname="Unity.TextMeshPro" preserve="all" />
+
+    <!-- UI Toolkit -->
+    <assembly fullname="UnityEngine.UIElementsModule" preserve="all" />
+    
+</linker>

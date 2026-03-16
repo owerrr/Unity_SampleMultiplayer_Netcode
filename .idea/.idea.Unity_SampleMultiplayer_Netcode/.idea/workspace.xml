@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="85eedc8e-1ac9-4ed3-b1ec-4eacdb9862c4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Unity_SampleMultiplayer_Netcode/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Unity_SampleMultiplayer_Netcode/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Player.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Player.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene/Enviro.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene/Enviro.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" afterDir="false" />
-    </list>
+    <list default="true" id="85eedc8e-1ac9-4ed3-b1ec-4eacdb9862c4" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -128,7 +123,7 @@
       <workItem from="1773598911317" duration="2883000" />
       <workItem from="1773611550635" duration="7384000" />
       <workItem from="1773655726041" duration="4533000" />
-      <workItem from="1773666846063" duration="1027000" />
+      <workItem from="1773666846063" duration="1389000" />
     </task>
     <servers />
   </component>
