@@ -4,7 +4,6 @@ using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 using UnityEngine.InputSystem.UI;
