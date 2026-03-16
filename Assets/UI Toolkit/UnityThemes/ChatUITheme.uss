@@ -1,0 +1,15 @@
+.scroll{
+    flex-grow: 1;
+    margin-bottom: 8;
+}
+
+.chat-message {
+    white-space: normal;
+    overflow: hidden;
+    width: 100%;
+    font-size: 28px;
+    margin-bottom: 4px;
+    color: white;
+    -unity-text-align: middle-left;
+    flex-shrink: 0;
+}

@@ -43,7 +43,6 @@ namespace SampleMultiplayer
                 commandBuffer.AddComponent(req, new SendRpcCommandRequest {TargetConnection = entity});
                 Debug.Log($"[NEW RPC REQUEST] {entity.Index} - {id.ValueRO.Value}");
             }
-
             commandBuffer.Playback(state.EntityManager);
         }
     }

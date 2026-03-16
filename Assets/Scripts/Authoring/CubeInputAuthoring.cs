@@ -33,6 +33,13 @@ namespace SampleMultiplayer
         public void OnUpdate(ref SystemState state)
         {
 
+            if (ChatUI.IsTyping)
+            {
+                foreach (var playerInput in SystemAPI.Query<RefRW<CubeInput>>().WithAll<GhostOwnerIsLocal>())
+                    playerInput.ValueRW = default;
+                return;
+            }
+            
             var left  = Keyboard.current.aKey.isPressed;
             var right = Keyboard.current.dKey.isPressed;
             var down  = Keyboard.current.sKey.isPressed;
