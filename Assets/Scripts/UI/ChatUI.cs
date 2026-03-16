@@ -21,12 +21,6 @@ namespace SampleMultiplayer
         private static readonly float4 _ErrorColor = new float4(1f, 0.2f, 0.2f, 1f);
         private static readonly Color _ScrollBgInactive = new Color(0f, 0f, 0f, 0f);
         private static readonly Color _ScrollBgActive   = new Color(0f, 0f, 0f, 0.5f);
-
-        private string _errorMsg_NotConnected = "[Błąd] Nie jesteś połączony z serwerem.";
-        private string _errorMsg_CannotGetPlayerId = "[Błąd] Nie można pobrać Twojego ID gracza.";
-        private string _errorMsg_InvalidSyntax = "[Błąd] Nieprawidłowy format. Użyj: /w <ID gracza> <wiadomość>";
-        private string _errorMsg_InvalidPlayerId_LessThanZero = "[Błąd] Nieprawidłowy ID gracza. ID musi być liczbą większą od 0.";
-        private string _errorMsg_InvalidPlayerId_SameAsSender = "[Błąd] Nie możesz wysłać prywatnej wiadomości do samego siebie.";
         
         private bool _sendingMessage;
         
@@ -80,7 +74,7 @@ namespace SampleMultiplayer
 
             if (clientWorld == null || connectionQuery.IsEmpty)
             {
-                AddMessage(_errorMsg_NotConnected, _ErrorColor);
+                AddMessage(ChatErrorMessage.NotConnected, _ErrorColor);
                 return;
             }
 
@@ -93,7 +87,7 @@ namespace SampleMultiplayer
             var networkIdQuery = em.CreateEntityQuery(typeof(NetworkId));
             if (networkIdQuery.IsEmpty)
             {
-                AddMessage(_errorMsg_CannotGetPlayerId, _ErrorColor);
+                AddMessage(ChatErrorMessage.CannotGetPlayerId, _ErrorColor);
                 return;
             }
             var localNetworkId = networkIdQuery.GetSingleton<NetworkId>().Value;
@@ -107,21 +101,21 @@ namespace SampleMultiplayer
 
                 if (parts.Length < 3 || !int.TryParse(parts[1], out int parsedId))
                 {
-                    AddMessage(_errorMsg_InvalidSyntax, _ErrorColor);
+                    AddMessage(ChatErrorMessage.InvalidSyntax, _ErrorColor);
                     _chatInput.value = "";
                     return;
                 }
 
                 if (parsedId < 0)
                 {
-                    AddMessage(_errorMsg_InvalidPlayerId_LessThanZero, _ErrorColor);
+                    AddMessage(ChatErrorMessage.InvalidPlayerId_LessThanZero, _ErrorColor);
                     _chatInput.value = "";
                     return;
                 }
 
                 if (parsedId == localNetworkId)
                 {
-                    AddMessage(_errorMsg_InvalidPlayerId_SameAsSender, _ErrorColor);
+                    AddMessage(ChatErrorMessage.InvalidPlayerId_SameAsSender, _ErrorColor);
                     _chatInput.value = "";
                     return;
                 }

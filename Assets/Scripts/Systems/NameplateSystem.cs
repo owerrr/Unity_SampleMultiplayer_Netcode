@@ -66,6 +66,7 @@ namespace SampleMultiplayer
 
         private void LateUpdate()
         {
+            
             if (!_em.Exists(_entity))
             {
                 Destroy(gameObject);

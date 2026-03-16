@@ -27,14 +27,14 @@ namespace SampleMultiplayer
                 
                 if (targetId != -1 && targetId is <= 0 or > 4)
                 {
-                    SendErrorToSender(ref ecb, "[Błąd] Nieprawidłowy ID odbiorcy.", senderConn);
+                    SendErrorToSender(ref ecb, ChatErrorMessage.InvalidTarget, senderConn);
                     ecb.DestroyEntity(entity);
                     continue;
                 }
                 
                 if (targetId == senderId)
                 {
-                    SendErrorToSender(ref ecb, "[Błąd] Nie możesz wysłać prywatnej wiadomości do samego siebie.", senderConn);
+                    SendErrorToSender(ref ecb, ChatErrorMessage.SelfMessage, senderConn);
                     ecb.DestroyEntity(entity);
                     continue;
                 }
@@ -56,7 +56,7 @@ namespace SampleMultiplayer
 
                     if (!targetExists)
                     {
-                        SendErrorToSender(ref ecb, $"[Błąd] Gracz o ID {targetId} nie istnieje lub nie jest połączony.", senderConn);
+                        SendErrorToSender(ref ecb, ChatErrorMessage.PlayerNotFound(targetId), senderConn);
                         ecb.DestroyEntity(entity);
                         continue;
                     }
