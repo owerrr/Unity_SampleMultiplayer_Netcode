@@ -1,10 +1,11 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement name="ChatRoot" style="flex-grow: 1; flex-direction: column; padding: 10; margin-top: 10%;">
-        <ui:ScrollView name="ChatScroll" style="flex-grow: 1; margin-bottom: 8;">
-            <ui:VisualElement name="ChatMessages" style="flex-direction: column;" />
+    <Style src="project://database/Assets/UI%20Toolkit/UnityThemes/ChatUITheme.uss?fileID=7433441132597879392&amp;guid=9ce01823e6af6cf45891a696dc4ea95c&amp;type=3#ChatUITheme" />
+    <ui:VisualElement name="ChatRoot" style="flex-grow: 1; flex-direction: column; padding: 10; margin-top: 10%; width: 40%;">
+        <ui:ScrollView name="ChatScroll" class="scroll" mode="Vertical" style="overflow: hidden;">
+            <ui:VisualElement name="ChatMessages" style="flex-direction: column; overflow: hidden;" />
         </ui:ScrollView>
         <ui:VisualElement name="ChatInputRow" style="flex-direction: row; height: 100px;">
-            <ui:TextField name="ChatInput" placeholder-text="Write message..." focusable="true" style="flex-grow: 1; font-size: 34px;" />
+            <ui:TextField name="ChatInput" placeholder-text="Write message..." focusable="true" style="flex-grow: 1; font-size: 34px;" max-length="50" />
             <ui:Button name="SendChatButton" text="Send" style="width: 80; margin-left: 6;" />
         </ui:VisualElement>
     </ui:VisualElement>

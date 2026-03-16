@@ -15,49 +15,100 @@ namespace SampleMultiplayer
         public ushort NetworkPort = 7979;
         public string Address = "127.0.0.1";
         public string SceneToLoad;
-        
+
         public GameObject ChatUI;
+        public GameObject GameUI;
 
-        internal static string OldFrontendWorldName = string.Empty;
-
-        public void OnBeforeConnect()
-        {
-            Application.runInBackground = true;
-        }
-        
-        public void OnConnected()
-        {
-            DestroyLocalSimulationWorld();
-            
-            var scene = SceneManager.GetSceneByName(SceneToLoad);
-            if (scene.IsValid())
-                return;
-            
-            SceneManager.LoadSceneAsync(SceneToLoad, LoadSceneMode.Additive);
-        }
-        
         private UIDocument _uiDocument;
         private Button _startHost, _startClient;
-        
-        void Awake()
+
+        private void Awake()
         {
-            _uiDocument = GetComponent<UIDocument>();
-            
-            _startHost = _uiDocument.rootVisualElement.Q<Button>("StartHostButton");
-            _startClient = _uiDocument.rootVisualElement.Q<Button>("StartClientButton");
-            _startHost.clicked += StartClientServer;
-            _startClient.clicked += StartClient;
-            
             if (!FindAnyObjectByType<EventSystem>())
             {
-
                 var inputType = typeof(InputSystemUIInputModule);
                 var eventSystem = new GameObject("EventSystem", typeof(EventSystem), inputType);
                 eventSystem.transform.SetParent(transform);
             }
         }
 
-        void AddConnectionUISystemToUpdateList()
+        private void OnEnable()
+        {
+            _uiDocument  = GetComponent<UIDocument>();
+            _startHost   = _uiDocument.rootVisualElement.Q<Button>("StartHostButton");
+            _startClient = _uiDocument.rootVisualElement.Q<Button>("StartClientButton");
+            _startHost.clicked   += StartClientServer;
+            _startClient.clicked += StartClient;
+        }
+
+        private void OnDisable()
+        {
+            if (_startHost   != null) _startHost.clicked   -= StartClientServer;
+            if (_startClient != null) _startClient.clicked -= StartClient;
+        }
+
+        private void StartClientServer()
+        {
+            if (ClientServerBootstrap.RequestedPlayType != ClientServerBootstrap.PlayType.ClientAndServer)
+            {
+                Debug.LogError($"PlayType is {ClientServerBootstrap.RequestedPlayType}, expected ClientAndServer.");
+                return;
+            }
+
+            Application.runInBackground = true;
+            DisableButtons();
+            
+            var server = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+            var client = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+
+            World.DefaultGameObjectInjectionWorld = server;
+
+            LoadGameplayScene();
+
+            var serverEp = NetworkEndpoint.AnyIpv4.WithPort(NetworkPort);
+            using (var q = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>()))
+                q.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(serverEp);
+
+            var clientEp = NetworkEndpoint.LoopbackIpv4.WithPort(NetworkPort);
+            using (var q = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>()))
+                q.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, clientEp);
+
+            AddConnectionUISystemToUpdateList();
+
+            gameObject.SetActive(false);
+            ChatUI.SetActive(true);
+            GameUI.SetActive(true);
+        }
+
+        private void StartClient()
+        {
+            Application.runInBackground = true;
+            DisableButtons();
+
+            var client = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+
+            World.DefaultGameObjectInjectionWorld = client;
+
+            LoadGameplayScene();
+
+            var ep = NetworkEndpoint.Parse(Address, NetworkPort);
+            using (var q = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>()))
+                q.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, ep);
+
+            AddConnectionUISystemToUpdateList();
+
+            gameObject.SetActive(false);
+            ChatUI.SetActive(true);
+            GameUI.SetActive(true);
+        }
+
+        private void LoadGameplayScene()
+        {
+            if (!SceneManager.GetSceneByName(SceneToLoad).IsValid())
+                SceneManager.LoadSceneAsync(SceneToLoad, LoadSceneMode.Additive);
+        }
+
+        private void AddConnectionUISystemToUpdateList()
         {
             foreach (var world in World.All)
             {
@@ -65,117 +116,24 @@ namespace SampleMultiplayer
                 {
                     var sys = world.GetOrCreateSystemManaged<ConnectionUISystem>();
                     sys.UIBehaviour = this;
-                    var simGroup = world.GetExistingSystemManaged<SimulationSystemGroup>();
-                    simGroup.AddSystemToUpdateList(sys);
-                }
-            }
-        }
-        
-        void StartClientServer()
-        {
-            if (ClientServerBootstrap.RequestedPlayType != ClientServerBootstrap.PlayType.ClientAndServer)
-            {
-                Debug.LogError($"Creating client/server worlds is not allowed if playmode is set to {ClientServerBootstrap.RequestedPlayType}");
-                return;
-            }
-
-            OnBeforeConnect();
-            DisableButtons();
-           
-            var server = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-            var client = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            
-            if (World.DefaultGameObjectInjectionWorld == null)
-                World.DefaultGameObjectInjectionWorld = server;
-
-            OnConnected();
-            
-            NetworkEndpoint ep = NetworkEndpoint.AnyIpv4.WithPort(NetworkPort);
-            {
-                using var drvQuery = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-                drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(ep);
-            }
-
-            ep = NetworkEndpoint.LoopbackIpv4.WithPort(NetworkPort);
-            {
-                using var drvQuery = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-                drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, ep);
-            }
-            AddConnectionUISystemToUpdateList();
-
-            gameObject.SetActive(false);
-            ChatUI.SetActive(true);
-        }
-        
-        void StartClient()
-        {
-            OnBeforeConnect();
-            DisableButtons(); 
-            var client = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            
-            if (World.DefaultGameObjectInjectionWorld == null)
-                World.DefaultGameObjectInjectionWorld = client;
-            
-            OnConnected();
-
-            var ep = NetworkEndpoint.Parse(Address, NetworkPort);
-            {
-                using var drvQuery = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-                drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, ep);
-            }
-            AddConnectionUISystemToUpdateList();
-            
-            gameObject.SetActive(false);
-            ChatUI.SetActive(true);
-        }
-
-        static void DestroyLocalSimulationWorld()
-        {
-            foreach (var world in World.All)
-            {
-                if (world.Flags == WorldFlags.Game)
-                {
-                    OldFrontendWorldName = world.Name;
-                    world.Dispose();
-                    break;
+                    world.GetExistingSystemManaged<SimulationSystemGroup>().AddSystemToUpdateList(sys);
                 }
             }
         }
 
-        void DisableButtons()
+        private void DisableButtons()
         {
             _startHost.SetEnabled(false);
             _startClient.SetEnabled(false);
         }
     }
-    
+
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     [DisableAutoCreation]
     public partial class ConnectionUISystem : SystemBase
     {
         public ConnectionUI UIBehaviour;
-        string m_PingText;
-        
-        protected override void OnUpdate()
-        {
-            CompleteDependency();
-            if (!SystemAPI.TryGetSingletonEntity<NetworkStreamConnection>(out var connectionEntity))
-            {
-                m_PingText = default;
-                return;
-            }
-
-            var connection = EntityManager.GetComponentData<NetworkStreamConnection>(connectionEntity);
-            var address = SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRO.GetRemoteEndPoint(connection).Address;
-            if (EntityManager.HasComponent<NetworkId>(connectionEntity))
-            {
-                if (string.IsNullOrEmpty(m_PingText) || UnityEngine.Time.frameCount % 30 == 0)
-                {
-                    var networkSnapshotAck = EntityManager.GetComponentData<NetworkSnapshotAck>(connectionEntity);
-                    m_PingText = networkSnapshotAck.EstimatedRTT > 0 ? $"{(int) networkSnapshotAck.EstimatedRTT}ms" : "Connected";
-                }
-            }
-        }
+        protected override void OnUpdate() { }
     }
 }
