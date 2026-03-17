@@ -3,7 +3,15 @@
 A simple multiplayer game built in Unity using **Netcode for Entities**.  
 
 ## Demo
-<video controls src="Video/SampleMultiplayer_Demo.mp4" title="Title"></video>
+Host/Join Game
+![Host/Join Game](Demo/SM_Gif1.gif)
+
+Chat
+![Host/Join Game](Demo/SM_Gif2.gif)
+
+Disconnect
+![Host/Join Game](Demo/SM_Gif3.gif)
+
 
 ### [Download v0.1.0](https://github.com/owerrr/Unity_SampleMultiplayer_Netcode/releases/tag/v0.1.0)
 
