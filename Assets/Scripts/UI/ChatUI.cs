@@ -113,13 +113,6 @@ namespace SampleMultiplayer
                     return;
                 }
 
-                if (parsedId == localNetworkId)
-                {
-                    AddMessage(ChatErrorMessage.InvalidPlayerId_SameAsSender, _ErrorColor);
-                    _chatInput.value = "";
-                    return;
-                }
-
                 targetId = parsedId;
                 color = new float4(0.8f, 0f, 0.8f, 1f);
                 text = parts[2];
@@ -129,10 +122,11 @@ namespace SampleMultiplayer
             
             em.AddComponentData(rpcEntity, new ChatMessageRpc
             {
-                Message = new FixedString128Bytes(text),
-                SenderId = localNetworkId,
-                TargetId = targetId,
-                Color = color
+                Message    = new FixedString128Bytes(text),
+                SenderId   = localNetworkId,
+                SenderSlot = 0,
+                TargetId   = targetId,
+                Color      = color
             });
             em.AddComponentData(rpcEntity, new SendRpcCommandRequest
             {

@@ -16,6 +16,7 @@ namespace SampleMultiplayer
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent<Cube>(entity);
+                AddComponent(entity, new PlayerSlot { Value = 0 });
             }
         }
     }

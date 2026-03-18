@@ -33,11 +33,11 @@ namespace SampleMultiplayer
                 }
                 else if (targetId == -1)
                 {
-                    msg = $"Player {senderId}: {chat.ValueRO.Message}";
+                    msg = $"Player {chat.ValueRO.SenderSlot}: {chat.ValueRO.Message}";
                 }
                 else
                 {
-                    msg = $"[PM] Player {senderId} > Player {targetId}: {chat.ValueRO.Message}";
+                    msg = $"[PM] Player {chat.ValueRO.SenderSlot} > Player {targetId}: {chat.ValueRO.Message}";
                 }
 
                 Debug.Log(msg);

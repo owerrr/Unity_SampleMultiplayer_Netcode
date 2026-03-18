@@ -15,12 +15,12 @@ namespace SampleMultiplayer
             var camera = Camera.main;
             var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-            foreach (var (ghostOwner, transform, entity) in
-                     SystemAPI.Query<RefRO<GhostOwner>, RefRO<LocalTransform>>()
+            foreach (var (ghostOwner, slot, transform, entity) in
+                     SystemAPI.Query<RefRO<GhostOwner>, RefRO<PlayerSlot>, RefRO<LocalTransform>>()
                          .WithNone<NameplateInitialized>()
                          .WithEntityAccess())
             {
-                var go = new GameObject($"Nameplate_{ghostOwner.ValueRO.NetworkId}");
+                var go = new GameObject($"Nameplate_Player{slot.ValueRO.Value}");
                 go.transform.position = new Vector3(
                     transform.ValueRO.Position.x,
                     transform.ValueRO.Position.y + 1.5f,
@@ -31,7 +31,7 @@ namespace SampleMultiplayer
                 textGo.transform.SetParent(go.transform, false);
 
                 var tmp = textGo.AddComponent<TextMeshPro>();
-                tmp.text = $"Player {ghostOwner.ValueRO.NetworkId}";
+                tmp.text = $"Player {slot.ValueRO.Value}";
                 tmp.fontSize = 200;
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.color = Color.white;
@@ -66,7 +66,6 @@ namespace SampleMultiplayer
 
         private void LateUpdate()
         {
-            
             if (!_em.Exists(_entity))
             {
                 Destroy(gameObject);

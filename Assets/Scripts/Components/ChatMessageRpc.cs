@@ -8,6 +8,7 @@ namespace SampleMultiplayer
     {
         public FixedString128Bytes Message;
         public int SenderId;
+        public int SenderSlot;
         public int TargetId;
         public float4 Color;
     }
