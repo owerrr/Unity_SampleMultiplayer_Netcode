@@ -30,6 +30,7 @@ namespace SampleMultiplayer
             var builder = new EntityQueryBuilder(Allocator.Temp).WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
             state.RequireForUpdate(state.GetEntityQuery(builder));
         }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
@@ -72,23 +73,52 @@ namespace SampleMultiplayer
 
             var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
             networkIdFromEntity.Update(ref state);
+            
+            var playerCount = 0;
+            foreach (var _ in SystemAPI.Query<RefRO<NetworkId>>().WithAll<NetworkStreamInGame>())
+                playerCount++;
+            
+            var usedSlots = new NativeList<int>(4, Allocator.Temp);
+            foreach (var slot in SystemAPI.Query<RefRO<PlayerSlot>>())
+                usedSlots.Add(slot.ValueRO.Value);
 
             foreach (var (reqSrc, reqEntity) in 
                      SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>>().WithAll<GoInGameRequest>().WithEntityAccess())
             {
+                if (playerCount >= 4)
+                {
+                    Debug.Log($"[{worldName}] Server is full!");
+                    commandBuffer.AddComponent<NetworkStreamRequestDisconnect>(reqSrc.ValueRO.SourceConnection);
+                    commandBuffer.DestroyEntity(reqEntity);
+                    continue;
+                }
+                
+                int freeSlot = 1;
+                for (int i = 1; i <= 4; i++)
+                {
+                    bool taken = false;
+                    foreach (var s in usedSlots)
+                        if (s == i) { taken = true; break; }
+                    if (!taken) { freeSlot = i; break; }
+                }
+                usedSlots.Add(freeSlot);
+
                 commandBuffer.AddComponent<NetworkStreamInGame>(reqSrc.ValueRO.SourceConnection);
                 var networkId = networkIdFromEntity[reqSrc.ValueRO.SourceConnection];
 
-                UnityEngine.Debug.Log($"[{worldName}] {networkId.Value} joined the game, spawning {prefabName}");
+                Debug.Log($"[{worldName}] {networkId.Value} joined as Player {freeSlot}, spawning {prefabName}");
 
                 var player = commandBuffer.Instantiate(prefab);
-                commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
                 
+                commandBuffer.SetComponent(player, new GhostOwner {NetworkId = networkId.Value});
+                commandBuffer.AddComponent(player, new PlayerSlot {Value = freeSlot });
                 commandBuffer.AppendToBuffer(reqSrc.ValueRO.SourceConnection, new LinkedEntityGroup {Value = player});
-
                 commandBuffer.DestroyEntity(reqEntity);
+
+                playerCount++;
             }
 
+            usedSlots.Dispose();
             commandBuffer.Playback(state.EntityManager);
         }
     }
