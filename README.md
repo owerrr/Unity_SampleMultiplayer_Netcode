@@ -26,6 +26,7 @@ A simple multiplayer game built in Unity using **Netcode for Entities**.
 | `A` | Move left |
 | `D` | Move right |
 <br/>
+
 ## Features
 
 - **Multiplayer movement** - up to 4 players, move your cube with WASD.
@@ -33,6 +34,7 @@ A simple multiplayer game built in Unity using **Netcode for Entities**.
 - **Player nameplates** - each player has a name displayed above their cube.
 - **Host & Join** - one player hosts, others join via localhost.
 <br/>
+
 ## Notes
 
 - Game runs on **localhost** (`127.0.0.1:7979`), intended for local testing
