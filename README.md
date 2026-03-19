@@ -13,7 +13,7 @@ A simple multiplayer game built in Unity using **Netcode for Entities**.
 ![Disconnect](Demo/SM_Gif3.gif)
 
 
-### [Download v0.1.0](https://github.com/owerrr/Unity_SampleMultiplayer_Netcode/releases/tag/v0.1.0)
+### [Download v0.1.1](https://github.com/owerrr/Unity_SampleMultiplayer_Netcode/releases/tag/v0.1.1)
 
 <br/>
 
